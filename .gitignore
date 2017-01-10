@@ -24,16 +24,11 @@ ompiled source #
 ######################
 *.log
 *.sql
-*.sqlite
 
-# OS generated files #
-######################
-.DS_Store
-*.ok
-*.pyc
-*.ok_history
-/homework/problem/ok
-/homework/quiz/ok
-
-/lab/lab00/ok
+# Add by myself #
+#################
+/lab/
+/homework/
+/projects/
+!*.py
 
