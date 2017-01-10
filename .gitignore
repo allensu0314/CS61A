@@ -35,3 +35,10 @@ ompiled source #
 .Trashes
 ehthumbs.db
 Thumbs.db
+# add by myself .sc #
+#####################
+.ok
+.pyc
+.ok_history
+.ok_message
+
