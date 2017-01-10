@@ -32,4 +32,6 @@ ompiled source #
 *.ok
 *.pyc
 *.ok_history
-*.ok_message
+*.ok_messages
+/lab/lab00/ok
+
