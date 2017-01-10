@@ -27,8 +27,8 @@ ompiled source #
 
 # Add by myself #
 #################
-/lab/
-/homework/
-/projects/
-!*.py
-
+*.ok_history
+*.ok_messages
+__pycache__/
+*.ok
+ok
