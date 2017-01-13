@@ -259,6 +259,14 @@ def check_strategy(strategy, goal=GOAL_SCORE):
     """
     # BEGIN PROBLEM 6
     "*** REPLACE THIS LINE ***"
+    score0 = 0
+    while score0 < goal:
+        score1 = 0
+        while score1 < goal:
+            check_strategy_roll(score0, score1, strategy(score0, score1))
+            score1 += 1
+        score0 += 1
+
     # END PROBLEM 6
 
 
@@ -277,6 +285,14 @@ def make_averaged(fn, num_samples=1000):
     """
     # BEGIN PROBLEM 7
     "*** REPLACE THIS LINE ***"
+    def get_averaged(*args):
+        sum  = 0
+        times = num_samples
+        while times:
+            sum += fn(*args)
+            times -= 1
+        return sum / num_samples
+    return get_averaged
     # END PROBLEM 7
 
 
@@ -290,7 +306,14 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     10
     """
     # BEGIN PROBLEM 8
-    "*** REPLACE THIS LINE ***"
+    num_rolls, best_rolls, max_score = 1, 1, 0
+    while num_rolls <= 10:
+        get_score = make_averaged(roll_dice, num_samples)
+        score = get_score(num_rolls, dice)
+        if score > max_score:
+            best_rolls, max_score = num_rolls, score
+        num_rolls += 1
+    return best_rolls, max_score
     # END PROBLEM 8
 
 
@@ -312,10 +335,12 @@ def average_win_rate(strategy, baseline=always_roll(4)):
 
     return (win_rate_as_player_0 + win_rate_as_player_1) / 2
 
+# number of strategy run times
+cnt = 0
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True:  # Change to False when done finding max_scoring_num_rolls
+    if False:  # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
         rerolled_max = max_scoring_num_rolls(reroll(six_sided))
@@ -330,6 +355,8 @@ def run_experiments():
     if False:  # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
 
+    if True:
+        print('final_strategy win rate:', average_win_rate(final_strategy))
     "*** You may add additional experiments as you wish ***"
 
 
@@ -340,8 +367,12 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     and rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 9
-    "*** REPLACE THIS LINE ***"
-    return 4  # Replace this statement
+    free_bacon_score = free_bacon(opponent_score)
+    if is_prime(free_bacon_score):
+        free_bacon_score = next_prime(free_bacon_score)
+    if free_bacon_score >= margin:
+        return 0
+    return num_rolls  # Replace this statement
     # END PROBLEM 9
 check_strategy(bacon_strategy)
 
@@ -352,20 +383,55 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     NUM_ROLLS.
     """
     # BEGIN PROBLEM 10
-    "*** REPLACE THIS LINE ***"
-    return 4  # Replace this statement
+    free_bacon_score = free_bacon(opponent_score)
+    if is_prime(free_bacon_score):
+        free_bacon_score = next_prime(free_bacon_score)
+    if free_bacon_score >= margin or (free_bacon_score + score)*2 == opponent_score:
+        return 0
+    return num_rolls
     # END PROBLEM 10
 check_strategy(swap_strategy)
 
+def new_strategy(score, opponent_score, margin, num_rolls):
+    free_bacon_score = free_bacon(opponent_score)
+    if is_prime(free_bacon_score):
+        free_bacon_score = next_prime(free_bacon_score)
+
+    if (free_bacon_score + score)*2 == opponent_score:
+        return 0
+    if (score + opponent_score)%7 == 0:
+        return 5 # make a max score when our turn is Hog Wild
+    # freebacon大于阈值，且不给对方Hog Wild, 且不给对方在劣势时使用-1或0激活Swine Swap的机会时，掷0
+    # 但在测试中效果反而会下降，因为测试敌手只会掷4
+    if (free_bacon_score >= margin and (free_bacon_score + score + opponent_score)%7 != 0
+        and (score + free_bacon_score) != 2*(1+opponent_score)):
+        opponent_bacon = free_bacon(free_bacon_score + score)
+        if is_prime(opponent_bacon):
+            opponent_bacon = next_prime(opponent_bacon)
+        if (score + free_bacon_score) != 2*(opponent_bacon + opponent_score):
+            return 0
+    # if free_bacon_score >= margin and (free_bacon_score + score + opponent_score)%7 != 0:
+    #     return 0
+    # if free_bacon_score >= margin:
+    #     return 0
+    return num_rolls
 
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
 
     *** YOUR DESCRIPTION HERE ***
     """
-    # BEGIN PROBLEM 11
-    "*** REPLACE THIS LINE ***"
-    return 4  # Replace this statement
+    # BEGIN PROBLEM 1
+    if (score + 1) * 2 == opponent_score:
+        return -1
+
+    if score < 80:
+        num_rolls = new_strategy(score, opponent_score, 9, 4)
+    elif score < 90:
+        num_rolls = new_strategy(score, opponent_score, 6, 3)
+    else:
+        num_rolls = new_strategy(score, opponent_score, 5, 2)
+    return num_rolls
     # END PROBLEM 11
 check_strategy(final_strategy)
 
