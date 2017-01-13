@@ -313,7 +313,7 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
         if score > max_score:
             best_rolls, max_score = num_rolls, score
         num_rolls += 1
-    return best_rolls, max_score
+    return best_rolls
     # END PROBLEM 8
 
 
