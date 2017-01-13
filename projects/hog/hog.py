@@ -393,12 +393,18 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
 check_strategy(swap_strategy)
 
 def new_strategy(score, opponent_score, margin, num_rolls):
+    """
+    This strategy is to determine whether to return 0.
+    """
     free_bacon_score = free_bacon(opponent_score)
     if is_prime(free_bacon_score):
         free_bacon_score = next_prime(free_bacon_score)
 
+    # Most priority is Swine Swap
     if (free_bacon_score + score)*2 == opponent_score:
         return 0
+    # Make use of Hog Wild in our turn, choose a bigger num_rolls to get higher score, 
+    # and we don't have to worry about Pig-out(but not too big, because Pig-out is not impossible)
     if (score + opponent_score)%7 == 0:
         return 5 # make a max score when our turn is Hog Wild
     # freebacon大于阈值，且不给对方Hog Wild, 且不给对方在劣势时使用-1或0激活Swine Swap的机会时，掷0
@@ -417,14 +423,16 @@ def new_strategy(score, opponent_score, margin, num_rolls):
     return num_rolls
 
 def final_strategy(score, opponent_score):
-    """Write a brief description of your final strategy.
-
-    *** YOUR DESCRIPTION HERE ***
+    """
+    the average winning rate is about 6.27.
+    see per-line comments for more description.
     """
     # BEGIN PROBLEM 1
+    # most priority is Swine Swap. Only in this condition, use Pork Chop
     if (score + 1) * 2 == opponent_score:
         return -1
-
+    # change arguments depends on our current score.
+    # When we have high score, choose small num_rolls to reduce risk to Pig Out
     if score < 80:
         num_rolls = new_strategy(score, opponent_score, 9, 4)
     elif score < 90:
