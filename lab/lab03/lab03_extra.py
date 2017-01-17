@@ -96,12 +96,24 @@ def interleaved_sum(n, odd_term, even_term):
     ... interleaved_sum(5, lambda x: x, lambda x: x*x)
     29
     """
-    def helper(i):
-        if i == 0:
-            return 0
-        if i == 1:
-            return odd_term(1)
-        # to do..
+    # solution using two helper function
+    def odd_function(i):
+        if i == n:
+            return odd_term(i)
+        return odd_term(i)+even_function(i+1)
+    def even_function(i):
+        if i == n:
+            return even_term(i)
+        return even_term(i)+odd_function(i+1)
+    return odd_function(1)
+    # solution using one helper function
+    def helper(i, term1, term2):
+        if i == n:
+            return term1(i)
+        return term1(i) + helper(i+1, term2, term1)
+    return helper(1, odd_term, even_term)
+
+
 def ten_pairs(n):
     """Return the number of ten-pairs within positive integer n.
 
@@ -112,4 +124,14 @@ def ten_pairs(n):
     >>> ten_pairs(9641469)
     6
     """
-    "*** YOUR CODE HERE ***"
+    def helper(n, i):
+        if n == 0:
+            return 0
+        if n%10 == i:
+            return 1+ helper(n//10, i)
+        return helper(n//10, i)
+    # easy solution..
+    return (helper(n, 1)*helper(n, 9) + helper(n, 2)*helper(n, 8) + helper(n, 3)*helper(n,7) + 
+           helper(n, 4)*helper(n, 6) + helper(n, 5)*(helper(n, 5)-1)//2)
+    # better sulution..
+    return ten_pairs(n//10) + helper(n//10, 10-n%10)
